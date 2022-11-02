@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>MediaSoup Consumer</title>
+  <script src="mediasoup-client.js"></script>
+  <script src="socket.io/socket.io.js"></script>
+</head>
+<style>
+    #screenlist img {
+        border: 1px solid black;
+        width: 320px;
+        height: 180px;
+    }
+
+    #screenlist div {
+        padding: 3px 10px;
+        float: left;
+    }
+</style>
+<body>
+
+<p>
+  <button id="start" onclick="start();">受信開始</button>
+</p>
+<div id="screenlist"></div>
+
+<script>
+  'use strict';
+
+  const buttonStart = document.getElementById('start');
+
+  let consumer;
+
+  function start() {
+    buttonStart.disabled = true;
+
+    consumer = new Consumer();
+    consumer.join();
+  }
+
+  class Consumer {
+    constructor() {
+      this.sock = null;
+      this.msDevice = null;
+      this.msTransport = null;
+    }
+
+    async join() {
+      await this.createWebSocket();
+      await this.createDevice();
+      await this.createTransport();
+    }
+
+    // WebSocketの生成
+    async createWebSocket() {
+      const sock = io('/');
+
+      // サーバーから新しいProducerの通知を受信したらDataConsumerを生成する
+      sock.on('new-producer', async data => {
+        const params = await this.sendRequest('consume-data', {
+          transportId: this.msTransport.id,
+          consumeParameters: {
+            dataProducerId: data.producerId,
+          },
+        });
+
+        const consumer = await this.msTransport.consumeData(params);
+
+        // 画面共有の画像データを受信
+        consumer.on('message', msg => {
+          this.addOrUpdateScreen(data.producerId, msg);
+        });
+      });
+
+      this.sock = sock;
+    }
+
+    // MediaSoupを利用する場合、一番最初にDeviceオブジェクトを準備する
+    async createDevice() {
+      const rtpCap = await this.sendRequest('get-rtp-capabilities', {});
+      const device = new MediasoupClient.Device();
+      await device.load({routerRtpCapabilities: rtpCap});
+      this.msDevice = device;
+    }
+
+    // Deviceから通信用オブジェクトTransportを生成する
+    async createTransport() {
+      const params = await this.sendRequest('create-consumer-transport', {});
+      const transport = this.msDevice.createRecvTransport(params);
+
+      // connectイベントが発生したらパラメータを送信してサーバー側でWebRtcTransport.connect()を実行する
+      transport.on('connect', async ({dtlsParameters}, callback, errback) => {
+        this.sendRequest('connect-consumer-transport', {
+          transportId: transport.id,
+          dtlsParameters: dtlsParameters,
+        }).then(callback)
+          .catch(errback);
+      });
+
+      this.msTransport = transport;
+    }
+
+    // ProducerのIDで検索し、画面共有画像の更新または追加をおこなう
+    addOrUpdateScreen(producerId, imageData) {
+      let div = document.getElementById(producerId);
+      if (div == null) {
+        div = document.createElement('div');
+        div.id = producerId;
+        div.appendChild(document.createElement('img'));
+
+        const list = document.getElementById('screenlist');
+        list.appendChild(div);
+      }
+
+      const img = div.getElementsByTagName('img')[0];
+      const blob = new Blob([imageData]);
+      img.src = URL.createObjectURL(blob);
+    }
+
+    // WebSocket通信用共通メソッド
+    sendRequest(type, data) {
+      return new Promise((resolve, _reject) => {
+        this.sock.emit(type, data, res => resolve(res));
+      });
+    }
+  }
+</script>
+</body>
+</html>
