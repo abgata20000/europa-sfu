@@ -618,7 +618,9 @@ const mediasoupOptions = {
     listenIps: [
       // { ip: "127.0.0.1", announcedIp: null },
       // { ip: "0.0.0.0", announcedIp: "54.199.138.5" }
-      { ip: "54.199.138.5", announcedIp: null }
+      { ip: "172.26.3.170", announcedIp: null }
+      // { ip: "172.26.3.170", announcedIp: "54.199.138.5" }
+      // { ip: "54.199.138.5", announcedIp: null }
       // { ip: "0.0.0.0", announcedIp: process.env.PUBLIC_IP }
     ],
     enableUdp: true,
