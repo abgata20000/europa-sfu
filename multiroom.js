@@ -33,8 +33,9 @@
 // --- read options ---
 const fs = require('fs');
 let serverOptions = {
-  hostName: "europa-sfu.dev.big-gate.co.jp", listenPort: 80, useHttps: false,
-  httpsKeyFile: "", httpsCertFile: ""
+  hostName: "europa-sfu.dev.big-gate.co.jp", listenPort: 443, useHttps: true,
+  httpsKeyFile: "/etc/letsencrypt/live/europa-sfu.dev.big-gate.co.jp/privkey.pem",
+  httpsCertFile: "/etc/letsencrypt/live/europa-sfu.dev.big-gate.co.jp/fullchain.pem"
 };
 let sslOptions = {};
 if (serverOptions.useHttps) {
