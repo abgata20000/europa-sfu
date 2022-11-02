@@ -3,13 +3,42 @@
 let producerList = {};
 let consumerList = {};
 
-// --- HTTPサーバー ---
 
-const http = require('http');
+
+
+const fs = require('fs');
+let serverOptions = {
+  hostName: "europa-sfu.dev.big-gate.co.jp", listenPort: 443, useHttps: true,
+  httpsKeyFile: "/etc/letsencrypt/live/europa-sfu.dev.big-gate.co.jp/privkey.pem",
+  httpsCertFile: "/etc/letsencrypt/live/europa-sfu.dev.big-gate.co.jp/fullchain.pem"
+};
+let sslOptions = {};
+if (serverOptions.useHttps) {
+  sslOptions.key = fs.readFileSync(serverOptions.httpsKeyFile).toString();
+  sslOptions.cert = fs.readFileSync(serverOptions.httpsCertFile).toString();
+}
+
+// --- prepare server ---
+const http = require("http");
+const https = require("https");
 const express = require('express');
+
 const app = express();
+const webPort = serverOptions.listenPort;
 app.use(express.static('public'));
-const webServer = http.Server(app).listen(3000);
+
+let webServer = null;
+if (serverOptions.useHttps) {
+  // -- https ---
+  webServer = https.createServer(sslOptions, app).listen(webPort, function () {
+    console.log('Web server start. https://' + serverOptions.hostName + ':' + webServer.address().port + '/');
+  });
+} else {
+  // --- http ---
+  webServer = http.Server(app).listen(webPort, function () {
+    console.log('Web server start. http://' + serverOptions.hostName + ':' + webServer.address().port + '/');
+  });
+}
 
 // --- WebSocketサーバー ---
 
