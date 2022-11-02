@@ -101,8 +101,11 @@ let router = null;
 
 const mediasoup = require('mediasoup');
 const transportOption = {
-  listenIps: [// { ip: '192.168.0.1' },
-    {ip: '127.0.0.1'},], enableSctp: true,
+  listenIps: [
+    // {ip: '127.0.0.1'},
+    { ip: "0.0.0.0", announcedIp: "54.199.138.5" }
+  ],
+  enableSctp: true,
 };
 
 async function startWorker() {
