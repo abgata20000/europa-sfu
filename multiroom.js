@@ -642,7 +642,7 @@ let worker = null;
 
 async function startWorker() {
   const mediaCodecs = mediasoupOptions.router.mediaCodecs;
-  worker = await mediasoup.createWorker();
+  worker = await mediasoup.createWorker(mediasoupOptions.worker);
   //router = await worker.createRouter({ mediaCodecs });
   //producerTransport = await router.createWebRtcTransport(mediasoupOptions.webRtcTransport);
 
