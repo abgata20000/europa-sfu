@@ -595,8 +595,8 @@ const mediasoup = require("mediasoup");
 const mediasoupOptions = {
   // Worker settings
   worker: {
-    rtcMinPort: 20000,
-    rtcMaxPort: 20100,
+    rtcMinPort: 40000,
+    rtcMaxPort: 49999,
     logLevel: 'warn',
     logTags: ['info', 'ice', 'dtls', 'rtp', 'srtp', 'rtcp', // 'rtx',
       // 'bwe',
