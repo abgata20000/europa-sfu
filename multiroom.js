@@ -31,7 +31,7 @@
 'use strict';
 require('dotenv').config();
 const hostName = process.env.HOSTNAME || 'localhost';
-const listenPort = process.env.PORT || 3000;
+const listenPort = process.env.LISTEN_PORT || 3000;
 const useHttps = process.env.USE_HTTPS === 'true';
 const httpsKeyFile = process.env.HTTPS_KEY_FILE || '';
 const httpsCertFile = process.env.HTTPS_CERT_FILE || '';
