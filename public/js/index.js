@@ -215,13 +215,11 @@ function removeAllRemoteVideo() {
 // ============ UI button ==========
 
 function checkUseVideo() {
-  const useVideo = document.getElementById('use_video').checked;
-  return useVideo;
+  return true;
 }
 
 function checkUseAudio() {
-  const useAudio = document.getElementById('use_audio').checked;
-  return useAudio;
+  return true;
 }
 
 function startMedia() {

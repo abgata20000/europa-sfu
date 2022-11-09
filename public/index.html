@@ -1,31 +1,60 @@
 <!doctype html>
 <html>
-
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>europa sfu sample</title>
-<script src="/js/mediasoup-client.js"></script>
-<script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <script src="/js/mediasoup-client.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
-<h2>europa sfu sample</h2>
-<input type="checkbox" id="use_video" checked="1">video</input>
-<input type="checkbox" id="use_audio" checked="1">audio</input>
-<button id="start_video_button" onclick="startMedia();">Start Media</button>
-<button id="stop_video_button" onclick="stopMedia();">Stop Media</button>
-&nbsp;
-<input type="text" id="room_name" placeholder="room name" style="display: none;"/>
-<button id="connect_button" onclick="connect();">Connect</button>
-<button id="disconnect_button" onclick="disconnect();">Disconnect</button>
-<div>
-  ローカル<br/>
-  <video id="local_video" autoplay style="width: 120px; height: 90px; border: 1px solid black;"></video>
-  <span id="state_span"></span>
+<div class="container">
+  <div class="columns">
+    <div class="column">
+      <div class="box">
+        <h1 class="title">europa sfu sample</h1>
+        <div class="field">
+          <label class="label">部屋</label>
+          <div class="control">
+            <input class="input" type="text" id="room_name" placeholder="room name"/>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">名前</label>
+          <div class="control">
+            <input class="input" type="text" id="name" placeholder="Name">
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <button id="start_video_button" class="button is-link" onclick="startMedia();">オーディオ接続</button>
+            <button id="stop_video_button" class="button is-danger" onclick="stopMedia();">オーディオ切断</button>
+            <button id="connect_button" class="button is-link" onclick="connect();">接続</button>
+            <button id="disconnect_button" class="button is-danger" onclick="disconnect();">切断</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      <div class="box">
+        <video id="local_video" autoplay style="width: 120px; height: 90px; border: 1px solid black;"></video>
+        <span id="state_span"></span>
+      </div>
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      <div class="box">
+        <div id="remote_container"></div>
+      </div>
+    </div>
+  </div>
 </div>
-リモート<br/>
-<div id="remote_container"></div>
 </body>
-<script src="/js/multiroom.js"></script>
+<script src="/js/index.js"></script>
 </html>

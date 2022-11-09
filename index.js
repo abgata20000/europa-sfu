@@ -1,7 +1,12 @@
 import { webServer } from './libs/server.js';
 import {rtcMinPort, rtcMaxPort, listenIp, announcedIp} from './libs/config.js';
 import { Server } from "socket.io";
-const io = new Server(webServer);
+const io = new Server(webServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 console.log('socket.io server start. port=' + webServer.address().port);
 
 io.on('connection', function (socket) {
