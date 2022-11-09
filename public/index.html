@@ -2,29 +2,29 @@
 <html>
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="charset=UTF-8"/>
-  <title>mediasoup v3 multi</title>
-  <script src="/js/mediasoup-client.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+  <title>europa sfu sample</title>
+<script src="/js/mediasoup-client.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
-mediasoup v3 multiparty with socket.io<br/>
+<h2>europa sfu sample</h2>
 <input type="checkbox" id="use_video" checked="1">video</input>
 <input type="checkbox" id="use_audio" checked="1">audio</input>
 <button id="start_video_button" onclick="startMedia();">Start Media</button>
 <button id="stop_video_button" onclick="stopMedia();">Stop Media</button>
 &nbsp;
-<input type="text" id="room_name" placeholder="room name"/>
+<input type="text" id="room_name" placeholder="room name" style="display: none;"/>
 <button id="connect_button" onclick="connect();">Connect</button>
 <button id="disconnect_button" onclick="disconnect();">Disconnect</button>
 <div>
-  local video<br/>
+  ローカル<br/>
   <video id="local_video" autoplay style="width: 120px; height: 90px; border: 1px solid black;"></video>
   <span id="state_span"></span>
 </div>
-remote video<br/>
+リモート<br/>
 <div id="remote_container"></div>
 </body>
 <script src="/js/multiroom.js"></script>

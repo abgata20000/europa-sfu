@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "browserify": "^17.0.0",
     "dotenv": "^16.0.3",
@@ -10,5 +11,8 @@
     "mediasoup": "3",
     "mediasoup-client": "3",
     "socket.io": "^4.5.2"
+  },
+  "scripts": {
+    "start": "node index.js"
   }
 }
