@@ -1,0 +1,12 @@
+{
+  "name" : "EuropaSFU",
+  "script" : "/root/europa-sfu/index.js",
+  "log-date-format": "YYYY-MM-DD HH:mm:ss Z",
+  "env" : {
+    "NODE_ENV" : "production"
+  },
+  "env_development" : {
+    "NODE_ENV" : "development"
+  }
+}
+
