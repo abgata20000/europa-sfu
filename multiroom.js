@@ -31,14 +31,16 @@
 'use strict';
 require('dotenv').config();
 const hostName = process.env.HOSTNAME || 'localhost';
-const listenPort = process.env.LISTEN_PORT || 3000;
+const listenPort = Number(process.env.LISTEN_PORT || 3000);
 const useHttps = process.env.USE_HTTPS === 'true';
 const httpsKeyFile = process.env.HTTPS_KEY_FILE || '';
 const httpsCertFile = process.env.HTTPS_CERT_FILE || '';
-const rtcMinPort = process.env.RTC_MIN_PORT || 40000;
-const rtcMaxPort = process.env.RTC_MAX_PORT || 49999;
+const rtcMinPort = Number(process.env.RTC_MIN_PORT || 40000);
+const rtcMaxPort = Number(process.env.RTC_MAX_PORT || 49999);
 const listenIp = process.env.LISTEN_IP || '127.0.0.1'
 const announcedIp = process.env.ANNOUNCED_IP || null;
+
+console.log(rtcMinPort, rtcMaxPort, listenIp, announcedIp);
 
 // --- read options ---
 const fs = require('fs');
