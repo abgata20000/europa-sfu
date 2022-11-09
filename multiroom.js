@@ -29,13 +29,25 @@
 //   npm run multiroom
 
 'use strict';
+require('dotenv').config();
+const hostName = process.env.HOSTNAME || 'localhost';
+const listenPort = process.env.PORT || 3000;
+const useHttps = process.env.USE_HTTPS === 'true';
+const httpsKeyFile = process.env.HTTPS_KEY_FILE || '';
+const httpsCertFile = process.env.HTTPS_CERT_FILE || '';
+const rtcMinPort = process.env.RTC_MIN_PORT || 40000;
+const rtcMaxPort = process.env.RTC_MAX_PORT || 49999;
+const listenIp = process.env.LISTEN_IP || '127.0.0.1'
+const announcedIp = process.env.ANNOUNCED_IP || null;
 
 // --- read options ---
 const fs = require('fs');
 let serverOptions = {
-  hostName: "europa-sfu.dev.big-gate.co.jp", listenPort: 443, useHttps: true,
-  httpsKeyFile: "/etc/letsencrypt/live/europa-sfu.dev.big-gate.co.jp/privkey.pem",
-  httpsCertFile: "/etc/letsencrypt/live/europa-sfu.dev.big-gate.co.jp/fullchain.pem"
+  hostName: hostName,
+  listenPort: listenPort,
+  useHttps: useHttps,
+  httpsKeyFile: httpsKeyFile,
+  httpsCertFile: httpsCertFile
 };
 let sslOptions = {};
 if (serverOptions.useHttps) {
@@ -595,8 +607,8 @@ const mediasoup = require("mediasoup");
 const mediasoupOptions = {
   // Worker settings
   worker: {
-    rtcMinPort: 40000,
-    rtcMaxPort: 49999,
+    rtcMinPort: rtcMinPort,
+    rtcMaxPort: rtcMaxPort,
     logLevel: 'warn',
     logTags: ['info', 'ice', 'dtls', 'rtp', 'srtp', 'rtcp', // 'rtx',
       // 'bwe',
@@ -616,13 +628,7 @@ const mediasoupOptions = {
   }, // WebRtcTransport settings
   webRtcTransport: {
     listenIps: [
-      // { ip: "127.0.0.1", announcedIp: null },
-      // { ip: "127.0.0.1", announcedIp: "54.199.138.5" }
-      { ip: "0.0.0.0", announcedIp: "54.199.138.5" }
-      // { ip: "172.26.3.170", announcedIp: null }
-      // { ip: "172.26.3.170", announcedIp: "54.199.138.5" }
-      // { ip: "54.199.138.5", announcedIp: null }
-      // { ip: "0.0.0.0", announcedIp: process.env.PUBLIC_IP }
+      { ip: listenIp, announcedIp: announcedIp }
     ],
     enableUdp: true,
     enableTcp: true,
