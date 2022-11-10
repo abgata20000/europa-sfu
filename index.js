@@ -1,116 +1,26 @@
 import mediasoup from "mediasoup";
-import { webServer } from './libs/server.js';
-import {rtcMinPort, rtcMaxPort, listenIp, announcedIp} from './libs/config.js';
-import { Server } from "socket.io";
-const io = new Server(webServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
+import {webServer} from './libs/server.js';
+import {mediasoupOptions} from './libs/mediasoup_options.js'
+import {io} from './libs/io.js'
+import {Room} from './libs/room.js'
+
 console.log('socket.io server start. port=' + webServer.address().port);
 const rooms = {}
-
-const mediasoupOptions = {
-  // Worker settings
-  worker: {
-    rtcMinPort: rtcMinPort,
-    rtcMaxPort: rtcMaxPort,
-    logLevel: 'warn',
-    logTags: ['info', 'ice', 'dtls', 'rtp', 'srtp', 'rtcp', // 'rtx',
-      // 'bwe',
-      // 'score',
-      // 'simulcast',
-      // 'svc'
-    ],
-  }, // Router settings
-  router: {
-    mediaCodecs: [{
-      kind: 'audio', mimeType: 'audio/opus', clockRate: 48000, channels: 2
-    }, {
-      kind: 'video', mimeType: 'video/VP8', clockRate: 90000, parameters: {
-        'x-google-start-bitrate': 1000
-      }
-    },]
-  }, // WebRtcTransport settings
-  webRtcTransport: {
-    listenIps: [
-      { ip: listenIp, announcedIp: announcedIp }
-    ],
-    enableUdp: true,
-    enableTcp: true,
-    preferUdp: true,
-    maxIncomingBitrate: 1500000,
-    initialAvailableOutgoingBitrate: 1000000,
-  }
-};
-
-
-class Room {
-  constructor(id, name) {
-    this.id = id
-    this.name = name
-    this.users = []
-    this.router = null
-    this.consumerTransports = {}
-    this.producerTransports = {}
-    this.audioProducers = {}
-  }
-
-  getConsumerTransport(id) {
-    return this.consumerTransports[id];
-  }
-  addConsumerTransport(id, transport) {
-    this.consumerTransports[id] = transport;
-  }
-
-  removeConsumerSetDeep(id) {
-    return
-  }
-
-  removeConsumerTransport(id) {
-    delete this.consumerTransports[id];
-  }
-
-  getProducerTransport(id) {
-    return this.producerTransports[id];
-  }
-
-  addProducerTransport(id, transport) {
-    this.producerTransports[id] = transport;
-  }
-
-  removeProducerTransport(id) {
-    delete this.producerTransports[id];
-  }
-
-  getProducer(userId) {
-    return this.audioProducers[userId];
-  }
-
-  addProducer(userId, producer) {
-    this.audioProducers[userId] = producer;
-  }
-
-  removeProducer(userId) {
-    delete this.audioProducers[userId];
-  }
-}
-
 let worker = null;
+
 async function startWorker() {
   worker = await mediasoup.createWorker(mediasoupOptions.worker);
 }
+
 startWorker();
 
 
-const createTransport = async (roomName) =>{
+const createTransport = async (roomName) => {
   const room = rooms[roomName];
   const router = room.router;
   const transport = await router.createWebRtcTransport(mediasoupOptions.webRtcTransport);
   return {
-    transport: transport,
-    params: {
+    transport: transport, params: {
       id: transport.id,
       iceParameters: transport.iceParameters,
       iceCandidates: transport.iceCandidates,
@@ -151,7 +61,8 @@ const createConsumer = async (roomName, transport, producer, rtpCapabilities) =>
   })
 
   return {
-    consumer: consumer, params: {
+    consumer: consumer,
+    params: {
       producerId: producer.id,
       id: consumer.id,
       kind: consumer.kind,
@@ -169,9 +80,9 @@ const addConsumer = (roomName, localId, remoteId, consumer, kind) => {
 
 
 io.on('connection', async (socket) => {
-  const { userId, userName, roomName } = socket.handshake.query;
+  const {userId, userName, roomName} = socket.handshake.query;
 
-  if(!rooms[roomName]) {
+  if (!rooms[roomName]) {
     const room = new Room(roomName, roomName)
 
     const mediaCodecs = mediasoupOptions.router.mediaCodecs;
@@ -185,12 +96,10 @@ io.on('connection', async (socket) => {
       console.log('-- router newtransport. room=%s', name);
     });
     room.router = router;
-    room.users = [
-      { userId, userName, socketId: socket.id }
-    ]
+    room.users = [{userId, userName, socketId: socket.id}]
     rooms[roomName] = room
   } else {
-    rooms[roomName].users.push({ userId, userName, socketId: socket.id })
+    rooms[roomName].users.push({userId, userName, socketId: socket.id})
   }
 
   socket.join(roomName);
@@ -218,7 +127,7 @@ io.on('connection', async (socket) => {
     callback(null, response);
   }
 
-  const sendReject = (error, callback)  =>{
+  const sendReject = (error, callback) => {
     callback(error.toString(), null);
   }
 
@@ -275,7 +184,9 @@ io.on('connection', async (socket) => {
       console.log('producer closed --- kind=' + kind);
     })
     sendResponse({id: producer.id}, callback);
-    socket.broadcast.to(roomName).emit('newProducer', {socketId: userId, userId: userId, producerId: producer.id, kind: producer.kind});
+    socket.broadcast.to(roomName).emit('newProducer', {
+      socketId: userId, userId: userId, producerId: producer.id, kind: producer.kind
+    });
   });
 
   socket.on('getCurrentProducers', async (data, callback) => {
